@@ -2,4 +2,6 @@
   :description "A Funge-98 interpreter"
   :components ((:file "packages")
                (:file "space"
+                :depends-on ("packages"))
+               (:file "ip"
                 :depends-on ("packages"))))
