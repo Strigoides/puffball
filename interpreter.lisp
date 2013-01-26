@@ -13,10 +13,10 @@
                      (gethash (char-at f-space (ip-location ip)) instructions)
                      ip))
           (when ip
-            (incf (elt (ip-location ip) 0)
-                  (elt (ip-delta ip)    0))
-            (incf (elt (ip-location ip) 1)
-                  (elt (ip-delta ip)    1))))))
+            (setf (ip-location ip)
+                  (vector-+
+                    (ip-location ip)
+                    (ip-delta ip)))))))
 
 (defun run-file (pathname &optional (instructions *funge-98-instructions*))
   "Run the file given by PATHNAME as a Funge-98 program"
