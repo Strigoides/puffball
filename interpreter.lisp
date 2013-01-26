@@ -17,3 +17,12 @@
                   (elt (ip-delta ip)    0))
             (incf (elt (ip-location ip) 1)
                   (elt (ip-delta ip)    1))))))
+
+(defun run-file (pathname &optional (instructions *funge-98-instructions*))
+  "Run the file given by PATHNAME as a Funge-98 program"
+  (run
+    (with-open-file (stream pathname)
+      (let ((out-string (make-string (file-length stream))))
+        (read-sequence out-string stream)
+        out-string))
+    instructions))
