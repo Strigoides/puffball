@@ -63,3 +63,11 @@
         (vector-+ (ip-location ip)
                   (ip-delta ip)))
   ip)
+
+(define-funge-instruction #\r
+  "Reverse the direction of travel"
+  (setf (ip-delta ip)
+        (map 'vector
+             (lambda (x) (* x -1))
+             (ip-delta ip)))
+  ip)
