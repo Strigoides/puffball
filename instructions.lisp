@@ -56,3 +56,10 @@
   "Pop the top value off the stack, and print it as a character"
   (princ (pop (car (ip-stack-stack ip))))
   ip)
+
+(define-funge-instruction #\#
+  "`Tramponline' instruction; jump over one cell"
+  (setf (ip-location ip)
+        (vector-+ (ip-location ip)
+                  (ip-delta ip)))
+  ip)
