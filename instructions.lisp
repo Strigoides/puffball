@@ -51,3 +51,8 @@
   (setf (ip-delta ip)
         #(1 0))
   ip)
+
+(define-funge-instruction #\,
+  "Pop the top value off the stack, and print it as a character"
+  (princ (pop (car (ip-stack-stack ip))))
+  ip)
