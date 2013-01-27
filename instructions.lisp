@@ -17,6 +17,27 @@
          (lambda (ip)
            ,@body)))
 
+;;; Instructions "0" through "9"
+;;; The more natural DOTIMES or LOOP doesn't work here, as it closes over the
+;;; same integer 10 times, and causes all 10 instructions to push 10 onto
+;;; the stack
+(mapc
+  (lambda (n)
+    (setf (gethash (digit-char n) *funge-98-instructions*) 
+          (lambda (ip)
+            (push n (car (ip-stack-stack ip)))
+            ip)))
+  (loop for x from 0 to 9 collecting x))
+
+;;; Arithmetic
+(define-funge-instruction #\+
+  "Pop the top two stack values and add them together"
+  (push (+ (pop (car (ip-stack-stack ip)))
+           (pop (car (ip-stack-stack ip))))
+        (car (ip-stack-stack ip)))
+  ip)
+
+;;; Control flow instructions
 (define-funge-instruction #\@
   "Kill the current IP"
   (declare (ignore ip))
