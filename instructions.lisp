@@ -121,3 +121,29 @@
              (lambda (x) (* x -1))
              (ip-delta ip)))
   ip)
+
+;;; Stack manipulation
+(define-funge-instruction #\$
+  "Pops and discards the top element off the stack"
+  (pop (car (ip-stack-stack ip)))
+  ip)
+
+(define-funge-instruction #\:
+  "Duplicates the top stack element, pushing a copy of it onto the stack"
+  (push (car (car (ip-stack-stack ip)))
+        (car (ip-stack-stack ip)))
+  ip)
+
+(define-funge-instruction #\\
+  "Swaps the top two stack elements"
+  (let ((a (pop (car (ip-stack-stack ip))))
+        (b (pop (car (ip-stack-stack ip)))))
+    (push a (car (ip-stack-stack ip)))
+    (push b (car (ip-stack-stack ip)))
+    ip))
+
+(define-funge-instruction #\n
+  "Clears the stack"
+  (setf (car (ip-stack-stack ip))
+        ())
+  ip)
