@@ -37,7 +37,36 @@
         (car (ip-stack-stack ip)))
   ip)
 
-;;; Control flow instructions
+(define-funge-instruction #\-
+  "Pop the top two stack values and subtract the first from the second"
+  (push (- (- (pop (car (ip-stack-stack ip)))
+              (pop (car (ip-stack-stack ip)))))
+        (car (ip-stack-stack ip)))
+  ip)
+
+(define-funge-instruction #\*
+  "Pop the top two stack values and multiply them together"
+  (push (* (pop (car (ip-stack-stack ip)))
+           (pop (car (ip-stack-stack ip))))
+        (car (ip-stack-stack ip)))
+  ip)
+
+(define-funge-instruction #\/
+  "Pop the top two stack values and divide the second by the first"
+  (let ((a (pop (car (ip-stack-stack ip))))
+        (b (pop (car (ip-stack-stack ip)))))
+    (push (floor b a) (car (ip-stack-stack ip)))
+    ip))
+
+(define-funge-instruction #\%
+  "Pop the top two stack values and find the remainder of dividing the second
+   by the first"
+  (let ((a (pop (car (ip-stack-stack ip))))
+        (b (pop (car (ip-stack-stack ip)))))
+    (push (mod b a) (car (ip-stack-stack ip)))
+    ip))
+
+;;; Control flow
 (define-funge-instruction #\@
   "Kill the current IP"
   (declare (ignore ip))
