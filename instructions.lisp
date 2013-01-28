@@ -36,6 +36,16 @@
             ip)))
   (loop for x from 0 to 9 collecting x))
 
+;;; String stuff
+(define-funge-instruction #\'
+  "Push the next character in funge-space onto the stack, and jump over it"
+  (setf (ip-location ip)
+        (vector-+ (ip-location ip)
+                  (ip-delta    ip)))
+  (push (char-at f-space (ip-location ip))
+        (top-stack ip))
+  ip)
+
 ;;; Arithmetic
 (define-funge-instruction #\+
   "Pop the top two stack values and add them together"
