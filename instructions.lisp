@@ -9,13 +9,19 @@
 
 (defmacro define-funge-instruction (name &body body)
   "Defines a funge instruction corresponding to the character NAME.
-   Instructions have one, implicit argument: IP, which is bound to the ip
-   executing the instruction. The return value of the function is assigned to
-   the ip that executed it, so destructively modifying the ip passed in is
-   perfectly acceptable"
+   Instructions have two arguments: IP, which is bound to the ip executing the
+   instruction, and F-SPACE, which is bound to the funge-space that the ip
+   executing the instruction is within. The return value of the function is
+   assigned to the ip that executed it, so destructively modifying the ip passed
+   in is perfectly acceptable"
   `(setf (gethash ,name *funge-98-instructions*)
-         (lambda (ip)
-           ,@body)))
+         (lambda (ip f-space)
+           ,@(if (stringp (car body)) ; Put docstrings first
+               `(,(car body)
+                  (declare (ignorable f-space))
+                 ,@(cdr body))
+               `((declare (ignorable f-space))
+                 ,@body)))))
 
 ;;; Instructions "0" through "9"
 ;;; The more natural DOTIMES or LOOP doesn't work here, as it closes over the
@@ -24,7 +30,8 @@
 (mapc
   (lambda (n)
     (setf (gethash (digit-char n) *funge-98-instructions*) 
-          (lambda (ip)
+          (lambda (ip f-space)
+            (declare (ignore f-space))
             (push n (top-stack ip))
             ip)))
   (loop for x from 0 to 9 collecting x))

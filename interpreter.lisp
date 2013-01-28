@@ -20,7 +20,8 @@
               (t
                (setf ip (funcall 
                           (gethash current-char instructions)
-                          ip))))
+                          ip
+                          f-space))))
             (when ip
               (setf (ip-location ip)
                     (vector-+
