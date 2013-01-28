@@ -8,3 +8,6 @@
   (location    #(0 0)             :type (simple-vector 2))
   (delta       #(1 0)             :type (simple-vector 2))
   (stack-stack (list ())  :type list))
+
+(defmacro top-stack (ip)
+  `(car (ip-stack-stack ,ip)))

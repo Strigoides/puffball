@@ -16,7 +16,7 @@
                (setf string-mode (not string-mode)))
               (string-mode 
                (push current-char 
-                     (car (ip-stack-stack ip)))) 
+                     (top-stack ip))) 
               (t
                (setf ip (funcall 
                           (gethash current-char instructions)

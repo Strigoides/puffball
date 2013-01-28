@@ -25,45 +25,45 @@
   (lambda (n)
     (setf (gethash (digit-char n) *funge-98-instructions*) 
           (lambda (ip)
-            (push n (car (ip-stack-stack ip)))
+            (push n (top-stack ip))
             ip)))
   (loop for x from 0 to 9 collecting x))
 
 ;;; Arithmetic
 (define-funge-instruction #\+
   "Pop the top two stack values and add them together"
-  (push (+ (pop (car (ip-stack-stack ip)))
-           (pop (car (ip-stack-stack ip))))
-        (car (ip-stack-stack ip)))
+  (push (+ (pop (top-stack ip))
+           (pop (top-stack ip)))
+        (top-stack ip))
   ip)
 
 (define-funge-instruction #\-
   "Pop the top two stack values and subtract the first from the second"
-  (push (- (- (pop (car (ip-stack-stack ip)))
-              (pop (car (ip-stack-stack ip)))))
-        (car (ip-stack-stack ip)))
+  (push (- (- (pop (top-stack ip))
+              (pop (top-stack ip))))
+        (top-stack ip))
   ip)
 
 (define-funge-instruction #\*
   "Pop the top two stack values and multiply them together"
-  (push (* (pop (car (ip-stack-stack ip)))
-           (pop (car (ip-stack-stack ip))))
-        (car (ip-stack-stack ip)))
+  (push (* (pop (top-stack ip))
+           (pop (top-stack ip)))
+        (top-stack ip))
   ip)
 
 (define-funge-instruction #\/
   "Pop the top two stack values and divide the second by the first"
-  (let ((a (pop (car (ip-stack-stack ip))))
-        (b (pop (car (ip-stack-stack ip)))))
-    (push (floor b a) (car (ip-stack-stack ip)))
+  (let ((a (pop (top-stack ip)))
+        (b (pop (top-stack ip))))
+    (push (floor b a) (top-stack ip))
     ip))
 
 (define-funge-instruction #\%
   "Pop the top two stack values and find the remainder of dividing the second
    by the first"
-  (let ((a (pop (car (ip-stack-stack ip))))
-        (b (pop (car (ip-stack-stack ip)))))
-    (push (mod b a) (car (ip-stack-stack ip)))
+  (let ((a (pop (top-stack ip)))
+        (b (pop (top-stack ip))))
+    (push (mod b a) (top-stack ip))
     ip))
 
 ;;; Control flow
@@ -104,7 +104,7 @@
 
 (define-funge-instruction #\,
   "Pop the top value off the stack, and print it as a character"
-  (princ (pop (car (ip-stack-stack ip))))
+  (princ (pop (top-stack ip)))
   ip)
 
 (define-funge-instruction #\#
@@ -125,25 +125,59 @@
 ;;; Stack manipulation
 (define-funge-instruction #\$
   "Pops and discards the top element off the stack"
-  (pop (car (ip-stack-stack ip)))
+  (pop (top-stack ip))
   ip)
 
 (define-funge-instruction #\:
   "Duplicates the top stack element, pushing a copy of it onto the stack"
-  (push (car (car (ip-stack-stack ip)))
-        (car (ip-stack-stack ip)))
+  (push (car (top-stack ip))
+        (top-stack ip))
   ip)
 
 (define-funge-instruction #\\
   "Swaps the top two stack elements"
-  (let ((a (pop (car (ip-stack-stack ip))))
-        (b (pop (car (ip-stack-stack ip)))))
-    (push a (car (ip-stack-stack ip)))
-    (push b (car (ip-stack-stack ip)))
+  (let ((a (pop (top-stack ip)))
+        (b (pop (top-stack ip))))
+    (push a (top-stack ip))
+    (push b (top-stack ip))
     ip))
 
 (define-funge-instruction #\n
   "Clears the stack"
-  (setf (car (ip-stack-stack ip))
+  (setf (top-stack ip)
         ())
+  ip)
+
+;;; Conditionals
+(define-funge-instruction #\!
+  "Pop a value and push one it it's zero, and zero if it's non-zero"
+  (push (if (zerop (pop (top-stack ip)))
+          1
+          0)
+        (top-stack ip))
+  ip)
+
+(define-funge-instruction #\`
+  "Pop two values and push 1 if the second is larger than the first"
+  (push (if (< (pop (top-stack ip))
+               (pop (top-stack ip)))
+          1
+          0)
+        (top-stack ip))
+  ip)
+
+(define-funge-instruction #\_
+  "Pop a value and go right if it's zero, or left if it's non-zero"
+  (setf (ip-delta ip)
+        (if (zerop (pop (top-stack ip)))
+          #( 1 0)
+          #(-1 0)))
+  ip)
+
+(define-funge-instruction #\|
+  "Pop a value and go down if it's zero, or up if it's non-zero"
+  (setf (ip-delta ip)
+        (if (zerop (pop (top-stack ip)))
+          #(0  1)
+          #(0 -1)))
   ip)
