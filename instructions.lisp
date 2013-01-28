@@ -119,11 +119,6 @@
         #(1 0))
   ip)
 
-(define-funge-instruction #\,
-  "Pop the top value off the stack, and print it as a character"
-  (princ (code-char (pop (top-stack ip))))
-  ip)
-
 (define-funge-instruction #\#
   "`Tramponline' instruction; jump over one cell"
   (setf (ip-location ip)
@@ -197,4 +192,15 @@
         (if (zerop (pop (top-stack ip)))
           #(0  1)
           #(0 -1)))
+  ip)
+
+;;; Output
+(define-funge-instruction #\,
+  "Pop the top value off the stack, and print it as a character"
+  (princ (code-char (pop (top-stack ip))))
+  ip)
+
+(define-funge-instruction #\.
+  "Pop the top value off the stack, and print it as a (decimal) integer"
+  (princ (pop (top-stack ip)))
   ip)
