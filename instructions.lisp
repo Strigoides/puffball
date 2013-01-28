@@ -42,7 +42,7 @@
   (setf (ip-location ip)
         (vector-+ (ip-location ip)
                   (ip-delta    ip)))
-  (push (char-at f-space (ip-location ip))
+  (push (char-code (char-at f-space (ip-location ip)))
         (top-stack ip))
   ip)
 
@@ -121,7 +121,7 @@
 
 (define-funge-instruction #\,
   "Pop the top value off the stack, and print it as a character"
-  (princ (pop (top-stack ip)))
+  (princ (code-char (pop (top-stack ip))))
   ip)
 
 (define-funge-instruction #\#

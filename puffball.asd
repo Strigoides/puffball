@@ -4,9 +4,9 @@
                (:file "vector"
                 :depends-on ("packages"))
                (:file "instructions"
-                :depends-on ("packages"))
+                :depends-on ("packages" "ip"))
                (:file "interpreter"
-                :depends-on ("packages"))
+                :depends-on ("packages" "ip"))
                (:file "space"
                 :depends-on ("packages"))
                (:file "ip"

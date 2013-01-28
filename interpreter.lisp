@@ -15,13 +15,15 @@
               ((char= current-char #\")
                (setf string-mode (not string-mode)))
               (string-mode 
-               (push current-char 
+               (push (char-code current-char) 
                      (top-stack ip))) 
               (t
-               (setf ip (funcall 
-                          (gethash current-char instructions)
-                          ip
-                          f-space))))
+               (let ((fun (gethash current-char instructions)))
+                 (setf ip
+                       (if fun
+                         (funcall fun ip f-space)
+                         (funcall (gethash #\r instructions)
+                                  ip f-space))))))
             (when ip
               (setf (ip-location ip)
                     (vector-+
