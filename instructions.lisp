@@ -25,7 +25,7 @@
 
 ;;; Instructions "0" to "9", and "a" to "f"
 ;;; The more natural DOTIMES or LOOP doesn't work here, as it closes over the
-;;; same integer 10 times, and causes all 10 instructions to push 10 onto
+;;; same integer 16 times, and causes all 16 instructions to push 16 onto
 ;;; the stack
 (mapc
   (lambda (n char)
@@ -123,6 +123,20 @@
         (map 'vector
              (lambda (x) (* x -1))
              (ip-delta ip)))
+  ip)
+
+(define-funge-instruction #\[
+  "Turn to the left"
+  (setf (ip-delta ip)
+        (vector (elt (ip-delta ip) 1)
+                (- (elt (ip-delta ip) 0))))
+  ip)
+
+(define-funge-instruction #\]
+  "Turn to the right"
+  (setf (ip-delta ip)
+        (vector (- (elt (ip-delta ip) 1))
+                (elt (ip-delta ip) 0)))
   ip)
 
 ;;; Stack manipulation
