@@ -37,3 +37,19 @@
         (loop for x from x1 to x2 do
               (princ (aref f-space x y)))
         (princ #\Newline)))
+
+(defun wrap (vector width height)
+  "Wrap a location vector, assuming that funge-space has dimensions WIDTHxHEIGHT"
+  ;; FIXME: Breaks on vectors with x/y more than twice width/height off the edge
+  ;; TODO: Implement parser for wrapping functions as defined at:
+  ;;       http://quadium.net/funge/spec98.html#Topologies
+  ;; TODO: Proper backtrack wrapping, rather than toroidal
+  (flet ((wrap-value (value max)
+           (cond
+             ((minusp value)
+              (+ max value))
+             ((>= value max)
+              (- value max))
+             (t value))))
+    (vector (wrap-value (elt vector 0) width)
+            (wrap-value (elt vector 1) height))))

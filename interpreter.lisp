@@ -26,9 +26,11 @@
                                   ip f-space))))))
             (when ip
               (setf (ip-location ip)
-                    (vector-+
-                      (ip-location ip)
-                      (ip-delta ip))))))))
+                    (apply #'wrap
+                           (vector-+
+                             (ip-location ip)
+                             (ip-delta ip))
+                           (array-dimensions f-space))))))))
 
 (defun run-file (pathname &optional (instructions *funge-98-instructions*))
   "Run the file given by PATHNAME as a Funge-98 program"
