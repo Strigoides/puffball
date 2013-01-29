@@ -127,10 +127,7 @@
 
 (define-funge-instruction #\#
   "`Tramponline' instruction; jump over one cell"
-  (setf (ip-location ip)
-        (vector-+ (ip-location ip)
-                  (ip-delta ip)))
-  ip)
+  (move-ip ip))
 
 (define-funge-instruction #\r
   "Reverse the direction of travel"

@@ -12,6 +12,13 @@
 (defmacro top-stack (ip)
   `(car (ip-stack-stack ,ip)))
 
+(defun move-ip (ip)
+  "Move the given ip by its delta, and return the ip"
+  (setf (ip-location ip)
+        (vector-+ (ip-location ip)
+                  (ip-delta ip)))
+  ip)
+
 (defun pop-stack (ip)
   "Pop the top value off the stack and return it. When the stack is empty,
    return zero instead"
