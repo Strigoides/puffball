@@ -1,0 +1,7 @@
+ v
+#<v"# across left edge skips rightmost cell"v
+  v "# across left edge hits rightmost cell"<
+vv> #,:# _a,                                #
+ <v"# across right edge skips leftmost cell"
+< v"# across right edge hits leftmost cell"
+  > #,:# _@
