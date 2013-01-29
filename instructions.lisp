@@ -23,18 +23,19 @@
                `((declare (ignorable f-space))
                  ,@body)))))
 
-;;; Instructions "0" through "9"
+;;; Instructions "0" to "9", and "a" to "f"
 ;;; The more natural DOTIMES or LOOP doesn't work here, as it closes over the
 ;;; same integer 10 times, and causes all 10 instructions to push 10 onto
 ;;; the stack
 (mapc
-  (lambda (n)
-    (setf (gethash (digit-char n) *funge-98-instructions*) 
+  (lambda (n char)
+    (setf (gethash char *funge-98-instructions*) 
           (lambda (ip f-space)
             (declare (ignore f-space))
             (push n (top-stack ip))
             ip)))
-  (loop for x from 0 to 9 collecting x))
+  (loop for x from 0 to 15 collecting x)
+  (coerce "0123456789abcdefg" 'list))
 
 ;;; Arithmetic
 (define-funge-instruction #\+
