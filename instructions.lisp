@@ -86,6 +86,21 @@
   ;; execute in "no time at all", as far as concurrency is concerned
   ip)
 
+(define-funge-instruction #\;
+  "Skip instructions until the next ;"
+  ;; TODO: This should also take "no time at all" as far as concurrency is
+  ;; concerned
+  (setf (ip-location ip) ; Move off the first semicolon
+        (vector-+ (ip-location ip) (ip-delta ip)))
+  (setf (ip-location ip)
+        (do ((x (elt (ip-location ip) 0)
+                (+ x (elt (ip-delta ip) 0)))
+             (y (elt (ip-location ip) 1)
+                (+ y (elt (ip-delta ip) 1))))
+          ((char= (aref f-space x y) #\;)
+           (vector x y))))
+  ip)
+
 (define-funge-instruction #\<
   "Change the DELTA of the IP to point to the left"
   (setf (ip-delta ip)
