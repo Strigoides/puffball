@@ -20,6 +20,7 @@
     (loop for char across code-string
           with x = 0
           with y = 0
+          until (char= char #\Nul)
           do (if (char= char #\Newline)
                (setf x 0
                      y (1+ y))

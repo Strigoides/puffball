@@ -11,3 +11,15 @@
 
 (defmacro top-stack (ip)
   `(car (ip-stack-stack ,ip)))
+
+(defun pop-stack (ip)
+  "Pop the top value off the stack and return it. When the stack is empty,
+   return zero instead"
+  (or (pop (top-stack ip))
+      0))
+
+(defun pop-vector (ip)
+  "Pop a vector off the stack"
+  (let ((x (pop-stack ip))
+        (y (pop-stack ip)))
+    (vector x y)))

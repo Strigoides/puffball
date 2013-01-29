@@ -36,50 +36,40 @@
             ip)))
   (loop for x from 0 to 9 collecting x))
 
-;;; String stuff
-(define-funge-instruction #\'
-  "Push the next character in funge-space onto the stack, and jump over it"
-  (setf (ip-location ip)
-        (vector-+ (ip-location ip)
-                  (ip-delta    ip)))
-  (push (char-code (char-at f-space (ip-location ip)))
-        (top-stack ip))
-  ip)
-
 ;;; Arithmetic
 (define-funge-instruction #\+
   "Pop the top two stack values and add them together"
-  (push (+ (pop (top-stack ip))
-           (pop (top-stack ip)))
+  (push (+ (pop-stack ip)
+           (pop-stack ip))
         (top-stack ip))
   ip)
 
 (define-funge-instruction #\-
   "Pop the top two stack values and subtract the first from the second"
-  (push (- (- (pop (top-stack ip))
-              (pop (top-stack ip))))
+  (push (- (- (pop-stack ip)
+              (pop-stack ip)))
         (top-stack ip))
   ip)
 
 (define-funge-instruction #\*
   "Pop the top two stack values and multiply them together"
-  (push (* (pop (top-stack ip))
-           (pop (top-stack ip)))
+  (push (* (pop-stack ip)
+           (pop-stack ip))
         (top-stack ip))
   ip)
 
 (define-funge-instruction #\/
   "Pop the top two stack values and divide the second by the first"
-  (let ((a (pop (top-stack ip)))
-        (b (pop (top-stack ip))))
+  (let ((a (pop-stack ip))
+        (b (pop-stack ip)))
     (push (floor b a) (top-stack ip))
     ip))
 
 (define-funge-instruction #\%
   "Pop the top two stack values and find the remainder of dividing the second
    by the first"
-  (let ((a (pop (top-stack ip)))
-        (b (pop (top-stack ip))))
+  (let ((a (pop-stack ip))
+        (b (pop-stack ip)))
     (push (mod b a) (top-stack ip))
     ip))
 
@@ -137,7 +127,7 @@
 ;;; Stack manipulation
 (define-funge-instruction #\$
   "Pops and discards the top element off the stack"
-  (pop (top-stack ip))
+  (pop-stack ip)
   ip)
 
 (define-funge-instruction #\:
@@ -148,8 +138,8 @@
 
 (define-funge-instruction #\\
   "Swaps the top two stack elements"
-  (let ((a (pop (top-stack ip)))
-        (b (pop (top-stack ip))))
+  (let ((a (pop-stack ip))
+        (b (pop-stack ip)))
     (push a (top-stack ip))
     (push b (top-stack ip))
     ip))
@@ -163,7 +153,7 @@
 ;;; Conditionals
 (define-funge-instruction #\!
   "Pop a value and push one it it's zero, and zero if it's non-zero"
-  (push (if (zerop (pop (top-stack ip)))
+  (push (if (zerop (pop-stack ip))
           1
           0)
         (top-stack ip))
@@ -171,8 +161,8 @@
 
 (define-funge-instruction #\`
   "Pop two values and push 1 if the second is larger than the first"
-  (push (if (< (pop (top-stack ip))
-               (pop (top-stack ip)))
+  (push (if (< (pop-stack ip)
+               (pop-stack ip))
           1
           0)
         (top-stack ip))
@@ -181,7 +171,7 @@
 (define-funge-instruction #\_
   "Pop a value and go right if it's zero, or left if it's non-zero"
   (setf (ip-delta ip)
-        (if (zerop (pop (top-stack ip)))
+        (if (zerop (pop-stack ip))
           #( 1 0)
           #(-1 0)))
   ip)
@@ -189,7 +179,7 @@
 (define-funge-instruction #\|
   "Pop a value and go down if it's zero, or up if it's non-zero"
   (setf (ip-delta ip)
-        (if (zerop (pop (top-stack ip)))
+        (if (zerop (pop-stack ip))
           #(0  1)
           #(0 -1)))
   ip)
@@ -197,10 +187,34 @@
 ;;; Output
 (define-funge-instruction #\,
   "Pop the top value off the stack, and print it as a character"
-  (princ (code-char (pop (top-stack ip))))
+  (princ (code-char (pop-stack ip)))
   ip)
 
 (define-funge-instruction #\.
   "Pop the top value off the stack, and print it as a (decimal) integer"
-  (princ (pop (top-stack ip)))
+  (princ (pop-stack ip))
+  ip)
+
+;;; Funge-space manipulation
+(define-funge-instruction #\'
+  "Push the next character in funge-space onto the stack, and jump over it"
+  (setf (ip-location ip)
+        (vector-+ (ip-location ip)
+                  (ip-delta    ip)))
+  (push (char-code (char-at f-space (ip-location ip)))
+        (top-stack ip))
+  ip)
+
+(define-funge-instruction #\g
+  "Pop a vector, then push the value of the cell at that vector in funge-space"
+  (push (char-code (char-at f-space (pop-vector ip)))
+        (top-stack ip))
+  ip)
+
+(define-funge-instruction #\p
+  "Pop a vector, then a value, and set the cell at that vector in funge-space
+   to that value"
+  (let ((pos (pop-vector ip)))
+    (setf (aref f-space (elt pos 0) (elt pos 1))
+          (code-char (pop-stack ip))))
   ip)
