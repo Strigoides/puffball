@@ -151,6 +151,28 @@
                 (elt (ip-delta ip) 0)))
   ip)
 
+(define-funge-instruction #\k
+  "Pop a value `n' off the stack, move forward once, and then perform the
+   instruction under the ip n times"
+  ;; FIXME: doesn't take semicolons into account
+  (let ((n (pop-stack ip))
+        (instruction
+          (gethash (char-at f-space
+                            (do ((x (+ (elt (ip-location ip) 0)
+                                       (elt (ip-delta ip) 0))
+                                    (+ x (elt (ip-delta ip) 0)))
+                                 (y (+ (elt (ip-location ip) 1)
+                                       (elt (ip-delta ip) 1))
+                                    (+ y (elt (ip-delta ip) 1))))
+                              ((char/= (aref f-space x y) #\Space)
+                               (vector x y))))
+                   *funge-98-instructions*))) 
+    (if (zerop n)
+      (move-ip ip)
+      (loop repeat n do
+            (funcall instruction ip f-space))))
+  ip)
+
 ;;; Stack manipulation
 (define-funge-instruction #\$
   "Pops and discards the top element off the stack"
