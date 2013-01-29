@@ -18,12 +18,9 @@
                (push (char-code current-char) 
                      (top-stack ip))) 
               (t
-               (let ((fun (gethash current-char instructions)))
-                 (setf ip
-                       (if fun
-                         (funcall fun ip f-space)
-                         (funcall (gethash #\r instructions)
-                                  ip f-space))))))
+               (setf ip (funcall (or (gethash current-char instructions)
+                                     (gethash #\r instructions))
+                                 ip f-space))))
             (when ip
               (setf (ip-location ip)
                     (apply #'wrap
