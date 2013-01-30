@@ -30,3 +30,18 @@
   (let ((x (pop-stack ip))
         (y (pop-stack ip)))
     (vector x y)))
+
+(defun next-instruction (start delta f-space)
+  "Starting from START, moving by DELTA, find the first cell that is not a
+   space, also excluding semicolon delimited blocks"
+  (do ((location start
+                 (case (char-at f-space location)
+                   (#\Space (vector-+ location delta))
+                   (#\; (do ((location2 (vector-+ location delta)
+                                        (vector-+ location2 delta)))
+                          ((char= (char-at f-space location2)
+                                  #\;)
+                           (vector-+ location2 delta)))))))
+    ((not (member (char-at f-space location)
+                  '(#\Space #\;)))
+     location)))

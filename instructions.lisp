@@ -90,15 +90,12 @@
   "Skip instructions until the next ;"
   ;; TODO: This should also take "no time at all" as far as concurrency is
   ;; concerned
-  (setf (ip-location ip) ; Move off the first semicolon
-        (vector-+ (ip-location ip) (ip-delta ip)))
   (setf (ip-location ip)
-        (do ((x (elt (ip-location ip) 0)
-                (+ x (elt (ip-delta ip) 0)))
-             (y (elt (ip-location ip) 1)
-                (+ y (elt (ip-delta ip) 1))))
-          ((char= (aref f-space x y) #\;)
-           (vector x y))))
+        (vector-minus
+          (next-instruction (ip-location ip)
+                            (ip-delta ip)
+                            f-space)
+          (ip-delta ip)))
   ip)
 
 (define-funge-instruction #\<
@@ -154,23 +151,20 @@
 (define-funge-instruction #\k
   "Pop a value `n' off the stack, move forward once, and then perform the
    instruction under the ip n times"
-  ;; FIXME: doesn't take semicolons into account
   (let ((n (pop-stack ip))
         (instruction
-          (gethash (char-at f-space
-                            (do ((x (+ (elt (ip-location ip) 0)
-                                       (elt (ip-delta ip) 0))
-                                    (+ x (elt (ip-delta ip) 0)))
-                                 (y (+ (elt (ip-location ip) 1)
-                                       (elt (ip-delta ip) 1))
-                                    (+ y (elt (ip-delta ip) 1))))
-                              ((char/= (aref f-space x y) #\Space)
-                               (vector x y))))
+          (gethash (char-at
+                     f-space
+                     (next-instruction
+                       (vector-+ (ip-location ip)
+                                 (ip-delta ip))
+                       (ip-delta ip)
+                       f-space))
                    *funge-98-instructions*))) 
     (if (zerop n)
       (move-ip ip)
       (loop repeat n do
-            (funcall instruction ip f-space))))
+            (setf ip (funcall instruction ip f-space)))))
   ip)
 
 ;;; Stack manipulation
