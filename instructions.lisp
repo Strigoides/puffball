@@ -171,18 +171,18 @@
 
 ;;; Stack manipulation
 (define-funge-instruction #\$
-  "Pops and discards the top element off the stack"
+  "Pop and discard the top element of the stack"
   (pop-stack ip)
   ip)
 
 (define-funge-instruction #\:
-  "Duplicates the top stack element, pushing a copy of it onto the stack"
+  "Duplicate the top stack element, pushing a copy of it onto the stack"
   (push (car (top-stack ip))
         (top-stack ip))
   ip)
 
 (define-funge-instruction #\\
-  "Swaps the top two stack elements"
+  "Swap the top two stack elements"
   (let ((a (pop-stack ip))
         (b (pop-stack ip)))
     (push a (top-stack ip))
@@ -190,7 +190,7 @@
     ip))
 
 (define-funge-instruction #\n
-  "Clears the stack"
+  "Clear the stack"
   (setf (top-stack ip)
         ())
   ip)
