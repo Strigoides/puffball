@@ -155,11 +155,13 @@
         (instruction
           (gethash (char-at
                      f-space
-                     (next-instruction
-                       (vector-+ (ip-location ip)
-                                 (ip-delta ip))
-                       (ip-delta ip)
-                       f-space))
+                     (do ((location (vector-+ (ip-location ip)
+                                              (ip-delta ip))
+                                    (vector-+ location
+                                              (ip-delta ip))))
+                       ((not (member (char-at f-space location)
+                                     '(#\Space #\;)))
+                        location)))
                    *funge-98-instructions*))) 
     (if (zerop n)
       (move-ip ip)
