@@ -154,6 +154,18 @@
                 (elt (ip-delta ip) 0)))
   ip)
 
+(define-funge-instruction #\w
+  "Pop two values. If the second is smaller, turn left. If the first is
+   smaller, turn right. If they're the same, keep going forward"
+  (let ((a (pop-stack ip))
+        (b (pop-stack ip)))
+    (funcall (gethash (cond
+                        ((> a b) #\[)
+                        ((< a b) #\])
+                        (t #\Space))
+                      *funge-98-instructions*)
+             ip f-space)))
+
 (define-funge-instruction #\k
   "Pop a value `n' off the stack, move forward once, and then perform the
    instruction under the ip n times"
