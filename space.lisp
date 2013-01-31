@@ -11,7 +11,9 @@
   (positive-quadrant (make-array +default-size+
                                  :element-type 'character
                                  :initial-element #\Space)
-                     :type (simple-array character)))
+                     :type (simple-array character))
+  (negative-quadrants (make-hash-table :test #'equal)
+                      :type hash-table))
 
 (defun f-space-size (f-space)
   (array-dimensions (slot-value f-space 'positive-quadrant)))
@@ -22,13 +24,24 @@
 
 (defun char-at (f-space x y)
   "Return the character at the location given by two ints"
-  (aref (slot-value f-space 'positive-quadrant) x y))
+  (if (or (minusp x)
+          (minusp y))
+    (or (gethash (list x y) (slot-value f-space 'negative-quadrants))
+        #\Space) 
+    (aref (slot-value f-space 'positive-quadrant) x y)))
 
 (defun set-f-space-location (f-space vector char)
   "Set the location in F-SPACE given by VECTOR to CHAR"
-  (setf (aref (slot-value f-space 'positive-quadrant)
-              (elt vector 0) (elt vector 1))
-        char))
+  (if (or (minusp (elt vector 0)) 
+          (minusp (elt vector 1)))
+    (or (gethash (coerce vector 'list)
+                 (slot-value f-space 'negative-quadrants))
+        (setf (gethash (coerce vector 'list)
+                       (slot-value f-space 'negative-quadrants))
+              char))
+    (setf (aref (slot-value f-space 'positive-quadrant)
+                (elt vector 0) (elt vector 1))
+          char)))
 
 (defun load-f-space (code-string)
   "Create an f-space object corresponding to the funge program in CODE-STRING"
