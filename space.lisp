@@ -1,14 +1,20 @@
 ;;;; Funge-space
 (in-package :puffball)
 
-(defun make-f-space (width height)
-  "Return a new funge-space object."
+(defconstant +default-size+ '(1000 1000)
+             "By default, f-space objects have these dimensions")
+
+(defstruct f-space
   ;; TODO: Make this able to be dynamically resized, rather than just
   ;; making it big enough for most cases
   ;; TODO: Generalize to deal with Unefunge and Trefunge
-  (make-array (list width height)
-              :element-type 'character
-              :initial-element #\Space))
+  (positive-quadrant (make-array +default-size+
+                                 :element-type 'character
+                                 :initial-element #\Space)
+                     :type (simple-array character)))
+
+(defun f-space-size (f-space)
+  (array-dimensions (slot-value f-space 'positive-quadrant)))
 
 (defun char-at-vector (f-space vector)
   "Return the character at the location given by a vector in the form: #(X Y)"
@@ -16,11 +22,17 @@
 
 (defun char-at (f-space x y)
   "Return the character at the location given by two ints"
-  (aref f-space x y))
+  (aref (slot-value f-space 'positive-quadrant) x y))
+
+(defun set-f-space-location (f-space vector char)
+  "Set the location in F-SPACE given by VECTOR to CHAR"
+  (setf (aref (slot-value f-space 'positive-quadrant)
+              (elt vector 0) (elt vector 1))
+        char))
 
 (defun load-f-space (code-string)
   "Create an f-space object corresponding to the funge program in CODE-STRING"
-  (let ((f-space (make-f-space 1000 1000)))
+  (let ((f-space (make-f-space)))
     (loop for char across code-string
           with x = 0
           with y = 0
@@ -29,9 +41,8 @@
                (setf x 0
                      y (1+ y))
                (progn
-                 (setf (aref f-space x y) char)
+                 (set-f-space-location f-space (vector x y) char)
                  (incf x)))
-
           finally (return f-space))))
 
 (defun print-f-space-region (f-space x1 y1 x2 y2)
@@ -39,7 +50,7 @@
    (x2, y2) from the given f-space object"
   (loop for y from y1 to y2 do
         (loop for x from x1 to x2 do
-              (princ (aref f-space x y)))
+              (princ (char-at f-space x y))) 
         (princ #\Newline)))
 
 (defun wrap (vector width height)

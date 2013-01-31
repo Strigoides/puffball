@@ -27,7 +27,7 @@
                            (vector-+
                              (ip-location ip)
                              (ip-delta ip))
-                           (array-dimensions f-space))))))))
+                           (f-space-size f-space))))))))
 
 (defun run-file (pathname &optional (instructions *funge-98-instructions*))
   "Run the file given by PATHNAME as a Funge-98 program"

@@ -259,7 +259,5 @@
 (define-funge-instruction #\p
   "Pop a vector, then a value, and set the cell at that vector in funge-space
    to that value"
-  (let ((pos (pop-vector ip)))
-    (setf (aref f-space (elt pos 0) (elt pos 1))
-          (code-char (pop-stack ip))))
+  (set-f-space-location f-space (pop-vector ip) (code-char (pop-stack ip)))
   ip)
