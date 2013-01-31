@@ -63,7 +63,10 @@
   "Pop the top two stack values and divide the second by the first"
   (let ((a (pop-stack ip))
         (b (pop-stack ip)))
-    (push (floor b a) (top-stack ip))
+    (push (if (zerop a)
+            0
+            (floor b a))
+          (top-stack ip))
     ip))
 
 (define-funge-instruction #\%
@@ -71,7 +74,10 @@
    by the first"
   (let ((a (pop-stack ip))
         (b (pop-stack ip)))
-    (push (mod b a) (top-stack ip))
+    (push (if (zerop a)
+            0
+            (mod b a))
+          (top-stack ip))
     ip))
 
 ;;; Control flow
