@@ -153,13 +153,13 @@
    instruction under the ip n times"
   (let ((n (pop-stack ip))
         (instruction
-          (gethash (char-at
+          (gethash (char-at-vector
                      f-space
                      (do ((location (vector-+ (ip-location ip)
                                               (ip-delta ip))
                                     (vector-+ location
                                               (ip-delta ip))))
-                       ((not (member (char-at f-space location)
+                       ((not (member (char-at-vector f-space location)
                                      '(#\Space #\;)))
                         location)))
                    *funge-98-instructions*))) 
@@ -246,13 +246,13 @@
   (setf (ip-location ip)
         (vector-+ (ip-location ip)
                   (ip-delta    ip)))
-  (push (char-code (char-at f-space (ip-location ip)))
+  (push (char-code (char-at-vector f-space (ip-location ip)))
         (top-stack ip))
   ip)
 
 (define-funge-instruction #\g
   "Pop a vector, then push the value of the cell at that vector in funge-space"
-  (push (char-code (char-at f-space (pop-vector ip)))
+  (push (char-code (char-at-vector f-space (pop-vector ip)))
         (top-stack ip))
   ip)
 

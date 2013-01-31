@@ -10,7 +10,7 @@
         (ip          (make-ip))
         (string-mode nil))
     (loop while ip do
-          (let ((current-char (char-at f-space (ip-location ip))))
+          (let ((current-char (char-at-vector f-space (ip-location ip))))
             (cond
               ((char= current-char #\")
                (setf string-mode (not string-mode)))

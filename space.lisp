@@ -10,9 +10,13 @@
               :element-type 'character
               :initial-element #\Space))
 
-(defun char-at (f-space vector)
+(defun char-at-vector (f-space vector)
   "Return the character at the location given by a vector in the form: #(X Y)"
-  (aref f-space (elt vector 0) (elt vector 1)))
+  (char-at f-space (elt vector 0) (elt vector 1)))
+
+(defun char-at (f-space x y)
+  "Return the character at the location given by two ints"
+  (aref f-space x y))
 
 (defun load-f-space (code-string)
   "Create an f-space object corresponding to the funge program in CODE-STRING"

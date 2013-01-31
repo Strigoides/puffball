@@ -35,13 +35,13 @@
   "Starting from START, moving by DELTA, find the first cell that is not a
    space, also excluding semicolon delimited blocks"
   (do ((location start
-                 (case (char-at f-space location)
+                 (case (char-at-vector f-space location)
                    (#\Space (vector-+ location delta))
                    (#\; (do ((location2 (vector-+ location delta)
                                         (vector-+ location2 delta)))
-                          ((char= (char-at f-space location2)
+                          ((char= (char-at-vector f-space location2)
                                   #\;)
                            (vector-+ location2 delta)))))))
-    ((not (member (char-at f-space location)
+    ((not (member (char-at-vector f-space location)
                   '(#\Space #\;)))
      location)))
