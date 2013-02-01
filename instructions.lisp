@@ -293,14 +293,20 @@
 
 (define-funge-instruction #\g
   "Pop a vector, then push the value of the cell at that vector in funge-space"
-  (push (char-code (char-at-vector f-space (pop-vector ip)))
+  (push (char-code (char-at-vector f-space
+                                   (vector-+
+                                     (pop-vector ip)
+                                     (ip-storage-offset ip))))
         (top-stack ip))
   ip)
 
 (define-funge-instruction #\p
   "Pop a vector, then a value, and set the cell at that vector in funge-space
    to that value"
-  (set-f-space-location f-space (pop-vector ip) (code-char (pop-stack ip)))
+  (set-f-space-location f-space (vector-+
+                                  (pop-vector ip)
+                                  (ip-storage-offset ip))
+                        (code-char (pop-stack ip)))
   ip)
 
 (define-funge-instruction #\s
