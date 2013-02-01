@@ -228,6 +228,14 @@
         ())
   ip)
 
+(define-funge-instruction #\{
+  "Pop a value n from the stack, then push a new stack onto the stack-stack,
+   and copy n values from the old stack to the new stack."
+  (let ((copy-n (pop-stack ip)))
+    (push (subseq (top-stack ip) 0 copy-n)
+          (ip-stack-stack ip)))
+  ip)
+
 ;;; Conditionals
 (define-funge-instruction #\!
   "Pop a value and push one it it's zero, and zero if it's non-zero"
