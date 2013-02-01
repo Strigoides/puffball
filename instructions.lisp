@@ -139,9 +139,7 @@
 (define-funge-instruction #\r
   "Reverse the direction of travel"
   (setf (ip-delta ip)
-        (map 'vector
-             (lambda (x) (* x -1))
-             (ip-delta ip)))
+        (vector-times-int (ip-delta ip) -1))
   ip)
 
 (define-funge-instruction #\[
