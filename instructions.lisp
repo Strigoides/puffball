@@ -92,6 +92,10 @@
   ;; execute in "no time at all", as far as concurrency is concerned
   ip)
 
+(define-funge-instruction #\z
+  "NOP"
+  ip)
+
 (define-funge-instruction #\;
   "Skip instructions until the next ;"
   ;; TODO: This should also take "no time at all" as far as concurrency is
