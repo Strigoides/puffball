@@ -13,7 +13,11 @@
                                  :initial-element #\Space)
                      :type (simple-array character))
   (negative-quadrants (make-hash-table :test #'equal)
-                      :type hash-table))
+                      :type hash-table)
+  (actual-width  0 :type integer) ; The array used for funge-space is usually
+  (actual-height 0 :type integer)); larger than funge-space itself, to allow
+                                  ; extending easily, but we need to store the
+                                  ; actual dimensions for wraparound and stuff
 
 (defun f-space-size (f-space)
   (array-dimensions (slot-value f-space 'positive-quadrant)))
@@ -45,7 +49,7 @@
   "Create an f-space object corresponding to the funge program in CODE-STRING"
   (let ((f-space (make-f-space)))
     (loop for char across code-string
-          with x = 0
+          with x = 0 maximizing x into longest-line
           with y = 0
           until (char= char #\Nul)
           do (if (char= char #\Newline)
@@ -54,7 +58,12 @@
                (progn
                  (set-f-space-location f-space (vector x y) char)
                  (incf x)))
-          finally (return f-space))))
+          finally
+            (setf (f-space-actual-width f-space)
+                  (1+ longest-line))
+            (setf (f-space-actual-height f-space)
+                  (1+ y))
+            (return f-space))))
 
 (defun print-f-space-region (f-space x1 y1 x2 y2)
   "Print the rectangle with top-left corner at (x1, y1), and bottom-right at
