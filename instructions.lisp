@@ -279,3 +279,11 @@
    to that value"
   (set-f-space-location f-space (pop-vector ip) (code-char (pop-stack ip)))
   ip)
+
+(define-funge-instruction #\s
+  "Pop a value off the stack, and store the character corresponding to it
+   in the next cell in the path of the ip"
+  (set-f-space-location f-space (vector-+ (ip-location ip)
+                                          (ip-delta ip))
+                        (code-char (pop-stack ip)))
+  (move-ip ip))
