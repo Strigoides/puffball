@@ -199,6 +199,11 @@
           (vector-times-int (ip-delta ip) (pop-stack ip))))
   ip)
 
+(define-funge-instruction #\x
+  "Pop a vector, and set delta to that vector"
+  (setf (ip-delta ip) (pop-vector ip))
+  ip)
+
 ;;; Stack manipulation
 (define-funge-instruction #\$
   "Pop and discard the top element of the stack"

@@ -27,8 +27,8 @@
 
 (defun pop-vector (ip)
   "Pop a vector off the stack"
-  (let ((x (pop-stack ip))
-        (y (pop-stack ip)))
+  (let ((y (pop-stack ip))
+        (x (pop-stack ip)))
     (vector x y)))
 
 (defun next-instruction (start delta f-space)
