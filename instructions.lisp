@@ -191,6 +191,14 @@
             (setf ip (funcall instruction ip f-space)))))
   ip)
 
+(define-funge-instruction #\j
+  "Pop a value n, and jump forward n * delta"
+  (setf (ip-location ip)
+        (vector-+ 
+          (ip-location ip)
+          (vector-times-int (ip-delta ip) (pop-stack ip))))
+  ip)
+
 ;;; Stack manipulation
 (define-funge-instruction #\$
   "Pop and discard the top element of the stack"
