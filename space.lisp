@@ -20,7 +20,8 @@
                                   ; actual dimensions for wraparound and stuff
 
 (defun f-space-size (f-space)
-  (array-dimensions (slot-value f-space 'positive-quadrant)))
+  (list (slot-value f-space 'actual-width)
+        (slot-value f-space 'actual-height)))
 
 (defun char-at-vector (f-space vector)
   "Return the character at the location given by a vector in the form: #(X Y)"
