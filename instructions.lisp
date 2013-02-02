@@ -269,7 +269,8 @@
      (setf (ip-storage-offset ip)
            (let ((y (pop (second (ip-stack-stack ip))))
                  (x (pop (second (ip-stack-stack ip)))))
-             (vector x y)))
+             (vector (if (null x) 0 x)
+                     (if (null y) 0 y))))
      (let ((move-n (pop-stack ip)))
        (cond
          ((plusp move-n)
@@ -302,6 +303,46 @@
          (loop repeat (abs move-n) do
                (push (pop-stack ip)
                      (second (ip-stack-stack ip))))))))
+  ip)
+
+;;; System information retrieval
+(define-funge-instruction #\y
+  "Retrieves various information about the interpreter and the underlying OS.
+   See http://quadium.net/funge/spec98.html#Sysinfo for details"
+  (flet ((make-bit-field ()
+           (make-array '(8) :element-type 'bit))
+         (set-nth-lsb (bit-vector n bit)
+           (setf (elt bit-vector (- (length bit-vector) n 1))
+                 bit))
+         (int<-bit-vector (bits)
+           (reduce (lambda (a b)
+                     (+ (ash a 1) b))
+                   bits))
+         (implemented (instruction)
+           (if (gethash instruction *funge-98-instructions*)
+             1
+             0)))
+    ;; Third cell.
+    ;; Handprint. Placeholder value for now
+    (push 16792875 (top-stack ip))
+    ;; Second cell.
+    ;; Bytes per cell. In puffball, cells store integers, and in Common Lisp,
+    ;; the integer type has no limit on magnitude. So, we report zero to mean
+    ;; unlimited
+    (push 0 (top-stack ip))
+    ;; First cell.
+    ;; Implementation of varius instructions, un-/buffered input
+    (let ((cell1 (make-bit-field)))
+      (set-nth-lsb cell1 0
+        (implemented #\t))
+      (set-nth-lsb cell1 1
+        (implemented #\i))
+      (set-nth-lsb cell1 2
+        (implemented #\o))
+      (set-nth-lsb cell1 3
+        (implemented #\=))
+      (set-nth-lsb cell1 4 0)
+      (push (int<-bit-vector cell1) (top-stack ip))))
   ip)
 
 ;;; Conditionals
