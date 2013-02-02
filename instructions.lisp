@@ -244,6 +244,25 @@
                   (ip-delta ip)))
   ip)
 
+(define-funge-instruction #\}
+  "Pop a vector from the second stack, and set the storage offset to that
+   value. Then, pop a value n from the stack, and set the top n elements
+   of the second stack to the top n values of the top stack.
+   If there is only one stack on the stack-stack, act like `r'"
+  (cond
+    ((endp (top-stack ip))
+     (funcall (gethash #\r *funge-98-instructions*)))
+    (t
+     (setf (ip-storage-offset ip)
+           (let ((y (pop (second (ip-stack-stack ip))))
+                 (x (pop (second (ip-stack-stack ip)))))
+             (vector x y)))
+     (let ((copy-n (pop-stack ip)))
+       (setf (subseq (second (ip-stack-stack ip)) 0 copy-n)
+             (subseq (top-stack ip) 0 copy-n)))
+     (pop (ip-stack-stack ip))))
+  ip)
+
 ;;; Conditionals
 (define-funge-instruction #\!
   "Pop a value and push one it it's zero, and zero if it's non-zero"
