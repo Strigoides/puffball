@@ -234,18 +234,18 @@
    and move n values from the old stack to the new stack. In addition, the
    storage offset is pushed to the old stack, and then set to LOCATION +
    DELTA"
-  (let ((copy-n (pop-stack ip)))
+  (let ((move-n (pop-stack ip)))
     (cond
-      ((plusp copy-n)
-       (push (subseq (top-stack ip) 0 copy-n)
+      ((plusp move-n)
+       (push (subseq (top-stack ip) 0 move-n)
              (ip-stack-stack ip))
        (setf (second (ip-stack-stack ip))
              (subseq (second (ip-stack-stack ip))
-                     copy-n)))
-      ((zerop copy-n)
+                     move-n)))
+      ((zerop move-n)
        (push () (ip-stack-stack ip)))
-      ((minusp copy-n)
-       (loop repeat (abs copy-n) do
+      ((minusp move-n)
+       (loop repeat (abs move-n) do
              (push 0 (top-stack ip)))
        (push () (ip-stack-stack ip))))) 
   (map nil (lambda (x)
@@ -270,17 +270,17 @@
            (let ((y (pop (second (ip-stack-stack ip))))
                  (x (pop (second (ip-stack-stack ip)))))
              (vector x y)))
-     (let ((copy-n (pop-stack ip)))
+     (let ((move-n (pop-stack ip)))
        (cond
-         ((plusp copy-n)
+         ((plusp move-n)
           (setf (second (ip-stack-stack ip))
                 (append
-                  (subseq (top-stack ip) 0 copy-n)
+                  (subseq (top-stack ip) 0 move-n)
                   (second (ip-stack-stack ip)))))
-         ((minusp copy-n)
+         ((minusp move-n)
           (setf (second (ip-stack-stack ip))
                 (subseq (second (ip-stack-stack ip))
-                        (abs copy-n))))))
+                        (abs move-n))))))
      (pop (ip-stack-stack ip))))
   ip)
 
