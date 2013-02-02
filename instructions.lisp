@@ -230,12 +230,15 @@
 
 (define-funge-instruction #\{
   "Pop a value n from the stack, then push a new stack onto the stack-stack,
-   and copy n values from the old stack to the new stack. In addition, the
+   and move n values from the old stack to the new stack. In addition, the
    storage offset is pushed to the old stack, and then set to LOCATION +
    DELTA"
   (let ((copy-n (pop-stack ip)))
     (push (subseq (top-stack ip) 0 copy-n)
-          (ip-stack-stack ip)))
+          (ip-stack-stack ip))
+    (setf (second (ip-stack-stack ip))
+          (subseq (second (ip-stack-stack ip))
+                  copy-n))) 
   (map nil (lambda (x)
              (push x (second (ip-stack-stack ip))))
        (ip-storage-offset ip))
@@ -258,8 +261,10 @@
                  (x (pop (second (ip-stack-stack ip)))))
              (vector x y)))
      (let ((copy-n (pop-stack ip)))
-       (setf (subseq (second (ip-stack-stack ip)) 0 copy-n)
-             (subseq (top-stack ip) 0 copy-n)))
+       (setf (second (ip-stack-stack ip))
+             (append
+               (subseq (top-stack ip) 0 copy-n)
+               (second (ip-stack-stack ip)))))
      (pop (ip-stack-stack ip))))
   ip)
 
