@@ -234,11 +234,19 @@
    storage offset is pushed to the old stack, and then set to LOCATION +
    DELTA"
   (let ((copy-n (pop-stack ip)))
-    (push (subseq (top-stack ip) 0 copy-n)
-          (ip-stack-stack ip))
-    (setf (second (ip-stack-stack ip))
-          (subseq (second (ip-stack-stack ip))
-                  copy-n))) 
+    (cond
+      ((plusp copy-n)
+       (push (subseq (top-stack ip) 0 copy-n)
+             (ip-stack-stack ip))
+       (setf (second (ip-stack-stack ip))
+             (subseq (second (ip-stack-stack ip))
+                     copy-n)))
+      ((zerop copy-n)
+       (push () (ip-stack-stack ip)))
+      ((minusp copy-n)
+       (loop repeat (abs copy-n) do
+             (push 0 (top-stack ip)))
+       (push () (ip-stack-stack ip))))) 
   (map nil (lambda (x)
              (push x (second (ip-stack-stack ip))))
        (ip-storage-offset ip))
@@ -253,18 +261,25 @@
    of the second stack to the top n values of the top stack.
    If there is only one stack on the stack-stack, act like `r'"
   (cond
-    ((endp (top-stack ip))
-     (funcall (gethash #\r *funge-98-instructions*)))
+    ((null (cdr (ip-stack-stack ip)))
+     (funcall (gethash #\r *funge-98-instructions*)
+              ip f-space))
     (t
      (setf (ip-storage-offset ip)
            (let ((y (pop (second (ip-stack-stack ip))))
                  (x (pop (second (ip-stack-stack ip)))))
              (vector x y)))
      (let ((copy-n (pop-stack ip)))
-       (setf (second (ip-stack-stack ip))
-             (append
-               (subseq (top-stack ip) 0 copy-n)
-               (second (ip-stack-stack ip)))))
+       (cond
+         ((plusp copy-n)
+          (setf (second (ip-stack-stack ip))
+                (append
+                  (subseq (top-stack ip) 0 copy-n)
+                  (second (ip-stack-stack ip)))))
+         ((minusp copy-n)
+          (setf (second (ip-stack-stack ip))
+                (subseq (second (ip-stack-stack ip))
+                        (abs copy-n))))))
      (pop (ip-stack-stack ip))))
   ip)
 
