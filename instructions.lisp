@@ -228,6 +228,7 @@
         ())
   ip)
 
+;;; Stack-stack manipulation
 (define-funge-instruction #\{
   "Pop a value n from the stack, then push a new stack onto the stack-stack,
    and move n values from the old stack to the new stack. In addition, the
@@ -281,6 +282,26 @@
                 (subseq (second (ip-stack-stack ip))
                         (abs copy-n))))))
      (pop (ip-stack-stack ip))))
+  ip)
+
+(define-funge-instruction #\u
+  "Pop a value `n' from the stack, and then transfer that many values from the
+   second stack to the top stack. If there is no second stack, reflect. If n
+   is negative, transfer |n| values from the top stack to the second stack. If
+   n is zero, do nothing"
+  (if (null (cdr (ip-stack-stack ip)))
+    (funcall (gethash #\r *funge-98-instructions*)
+             ip f-space)
+    (let ((move-n (pop-stack ip)))
+      (cond
+        ((plusp move-n)
+         (loop repeat move-n do
+               (push (pop (second (ip-stack-stack ip)))
+                     (top-stack ip))))
+        ((minusp move-n)
+         (loop repeat (abs move-n) do
+               (push (pop-stack ip)
+                     (second (ip-stack-stack ip))))))))
   ip)
 
 ;;; Conditionals
