@@ -321,16 +321,54 @@
          (implemented (instruction)
            (if (gethash instruction *funge-98-instructions*)
              1
-             0)))
-    ;; Third cell.
+             0))
+         (push-vector (vector ip)
+           (push (elt vector 0) (top-stack ip))
+           (push (elt vector 1) (top-stack ip))))
+    ;; 12.
+    ;; Storage offset of the current IP
+    (push-vector (ip-storage-offset ip) ip)
+    ;; 11.
+    ;; Delta of the current IP
+    (push-vector (ip-delta ip) ip) 
+    ;; 10. 
+    ;; Location of the current IP
+    (push-vector (ip-location ip) ip)
+    ;; 9. 
+    ;; Team number. I don't even know what this is. Push 0 arbitrarily
+    (push 0 (top-stack ip))
+    ;; 8. 
+    ;; ID for the current IP. Concurrency is not supported yet, so arbitrarily
+    ;; push 0
+    (push 0 (top-stack ip))
+    ;; 7. 
+    ;; Number of dimensions. Only befunge is supported so far, so just push 2
+    (push 2 (top-stack ip))
+    ;; 6. 
+    ;; Path seperator. / if unix-like, \ if windows
+    (push (char-code
+            #+unix #\/
+            #+windows #\\ )
+          (top-stack ip))
+    ;; 5. 
+    ;; What should = behave like? If we're on a unix-like OS, it's
+    ;; system()-like, otherwise, default to unavailable
+    #+unix
+    (push 1 (top-stack ip))
+    #-unix
+    (push 0 (top-stack ip))
+    ;; 4. 
+    ;; Version number. Stick with 0 for now.
+    (push 0 (top-stack ip))
+    ;; 3. 
     ;; Handprint. Placeholder value for now
     (push 16792875 (top-stack ip))
-    ;; Second cell.
+    ;; 2. 
     ;; Bytes per cell. In puffball, cells store integers, and in Common Lisp,
     ;; the integer type has no limit on magnitude. So, we report zero to mean
     ;; unlimited
     (push 0 (top-stack ip))
-    ;; First cell.
+    ;; 1.
     ;; Implementation of varius instructions, un-/buffered input
     (let ((cell1 (make-bit-field)))
       (set-nth-lsb cell1 0
