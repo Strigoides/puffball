@@ -324,7 +324,32 @@
              0))
          (push-vector (vector ip)
            (push (elt vector 0) (top-stack ip))
-           (push (elt vector 1) (top-stack ip))))
+           (push (elt vector 1) (top-stack ip)))
+         (push-string-list (strings)
+           (push 0 (top-stack ip))
+           (dolist (string (reverse strings))
+             (push 0 (top-stack ip))
+             (loop for char across (reverse string) do
+                   (push (char-code char)
+                         (top-stack ip))))))
+
+    ;; y returns the size of each stack *before* any information is pushed on.
+    ;; So, we need to measure this now and then keep it until 18.
+    (let ((stack-sizes (reverse (mapcar #'length (ip-stack-stack ip)))))
+      ;; 20.
+      ;; Environmental variables. Uses the sbcl extension
+      (push-string-list (sb-unix::posix-environ)) 
+      ;; 19. 
+      ;; argv. There is no standard way to fetch command line arguments.
+      ;; I might extend this for other implmentations later, but for now let's
+      ;; just use the sbcl extension
+      (push-string-list
+        (cdr (or #+sbcl sb-ext:*posix-argv* nil))) 
+      (push 0 (top-stack ip)) ; argv has an additional null on the end
+      ;; 18.
+      ;; Size of each stack
+      (dolist (size stack-sizes)
+        (push size (top-stack ip)))
     ;; 17.
     ;; Size of stack-stack
     (push (length (ip-stack-stack ip))
@@ -412,7 +437,7 @@
       (set-nth-lsb cell1 3
         (implemented #\=))
       (set-nth-lsb cell1 4 0)
-      (push (int<-bit-vector cell1) (top-stack ip))))
+      (push (int<-bit-vector cell1) (top-stack ip))))) 
   ip)
 
 ;;; Conditionals
