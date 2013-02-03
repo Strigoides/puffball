@@ -325,6 +325,40 @@
          (push-vector (vector ip)
            (push (elt vector 0) (top-stack ip))
            (push (elt vector 1) (top-stack ip))))
+    ;; 17.
+    ;; Size of stack-stack
+    (push (length (ip-stack-stack ip))
+          (top-stack ip))
+    ;; 16.
+    ;; Current time
+    (multiple-value-bind
+      (second minute hour date month year) (get-decoded-time)
+      (push (+ (* hour 256 256)
+               (* minute 256)
+               second)
+            (top-stack ip))
+      ;; 15.
+      ;; Current date
+      (push (+ (* (- year 1900) 256 256)
+               (* month 256) 
+               date)
+            (top-stack ip))) 
+    ;; Work minimum cell out now, as it's needed for 13. and 14.
+    (let ((min-point
+            (loop for point being the hash-keys in
+                  (f-space-negative-quadrants f-space)
+                  minimizing (elt point 0) into min-x
+                  minimizing (elt point 1) into min-y
+                  finally (return (vector min-x min-y)))))
+      ;; 14.
+      ;; Lower right bounding point of funge-space, relative to upper left point
+      (push-vector (vector-minus (vector (f-space-actual-width f-space)
+                                         (f-space-actual-height f-space))
+                                 min-point)
+                   ip) 
+      ;; 13.
+      ;; Upper left bouding point of funge-space
+      (push-vector min-point ip)) 
     ;; 12.
     ;; Storage offset of the current IP
     (push-vector (ip-storage-offset ip) ip)
@@ -353,10 +387,8 @@
     ;; 5. 
     ;; What should = behave like? If we're on a unix-like OS, it's
     ;; system()-like, otherwise, default to unavailable
-    #+unix
-    (push 1 (top-stack ip))
-    #-unix
-    (push 0 (top-stack ip))
+    #+unix (push 1 (top-stack ip))
+    #-unix (push 0 (top-stack ip))
     ;; 4. 
     ;; Version number. Stick with 0 for now.
     (push 0 (top-stack ip))
