@@ -44,7 +44,13 @@
           char)
     (setf (aref (slot-value f-space 'positive-quadrant)
                 (elt vector 0) (elt vector 1))
-          char)))
+          char))
+  (setf (f-space-actual-width f-space)
+        (max (f-space-actual-width f-space)
+             (elt vector 0))) 
+  (setf (f-space-actual-height f-space)
+        (max (f-space-actual-height f-space)
+             (elt vector 1))))
 
 (defun load-f-space (code-string)
   "Create an f-space object corresponding to the funge program in CODE-STRING"
