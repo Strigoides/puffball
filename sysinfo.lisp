@@ -1,4 +1,18 @@
 ;;;; System information retrieval
+
+(defvar *info-funs*
+  (make-array '(20) :element-type 'function)
+  "Functions for getting system information. The function for getting
+   info slot `n' is element `n' in this array")
+
+(defmacro definfo (n &body body)
+  "Define the function for getting info slot n. Information slots are indexed
+   starting with 1, as per the list in the spec. Should return either an int or
+   a list. Each function takes an ip, and an f-space."
+  `(setf (nth ,n *info-funs*)
+         (lambda (ip f-space)
+           ,@body)))
+
 (define-funge-instruction #\y
   "Retrieves various information about the interpreter and the underlying OS.
    See http://quadium.net/funge/spec98.html#Sysinfo for details"
