@@ -99,7 +99,7 @@
   (values<-vector (ip-delta ip))) 
 
 (definfo 12
-  "Storage offset of the current IP "
+  "Storage offset of the current IP"
   (declare (ignore f-space))
   (values<-vector (ip-storage-offset ip)))
 
@@ -112,12 +112,12 @@
         finally (return (vector min-x min-y))))
 
 (definfo 13
-  "Upper left bouding point of funge-space "
+  "Upper left bouding point of funge-space"
   (declare (ignore ip))
   (values<-vector (find-min-point f-space))) 
 
 (definfo 14
-  "Lower right bounding point of funge-space, relative to upper left point "
+  "Lower right bounding point of funge-space, relative to upper left point"
   (declare (ignore ip))
   (values<-vector
     (vector-minus (vector (f-space-actual-width f-space)
@@ -142,12 +142,12 @@
        second)))
 
 (definfo 17
-  "Size of stack-stack "
+  "Size of stack-stack"
   (declare (ignore f-space))
   (length (ip-stack-stack ip)))
 
 (definfo 18
-  "Size of each stack "
+  "Size of each stack"
   (declare (ignore f-space))
   (mapcar #'length (ip-stack-stack ip)))
 
@@ -170,7 +170,7 @@
           (cdr (or #+sbcl sb-ext:*posix-argv* nil))))) 
 
 (definfo 20
-  "Environmental variables. Uses the sbcl extension "
+  "Environmental variables. Uses the sbcl extension"
   (declare (ignore ip f-space))
   (null-delimited-ints<-string-list
     (sb-unix::posix-environ))) 
