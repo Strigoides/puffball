@@ -1,6 +1,8 @@
 (asdf:defsystem puffball
   :description "A Funge-98 interpreter"
   :components ((:file "packages")
+               (:file "fingerprint"
+                :depends-on ("packages"))
                (:file "sysinfo"
                 :depends-on ("packages" "instructions"))
                (:file "vector"
