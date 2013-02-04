@@ -210,8 +210,9 @@
 
 (define-funge-instruction #\:
   "Duplicate the top stack element, pushing a copy of it onto the stack"
-  (push (car (top-stack ip))
-        (top-stack ip))
+  (let ((duplicate-me (pop-stack ip)))
+    (loop repeat 2 do
+          (push duplicate-me (top-stack ip))))
   ip)
 
 (define-funge-instruction #\\
