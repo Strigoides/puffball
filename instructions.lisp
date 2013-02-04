@@ -15,13 +15,21 @@
    assigned to the ip that executed it, so destructively modifying the ip passed
    in is perfectly acceptable"
   `(setf (gethash ,name *funge-98-instructions*)
-         (lambda (ip f-space)
-           ,@(if (stringp (car body)) ; Put docstrings first
-               `(,(car body)
-                  (declare (ignorable f-space))
-                 ,@(cdr body))
-               `((declare (ignorable f-space))
-                 ,@body)))))
+         (instruction-lambda ',body)))
+
+(defun instruction-lambda (body)
+  "Given a body of code, create a lambda function which assumes that the code
+   is the body of a funge instruction; i.e. it receives IP and F-SPACE
+   arguments, and F-SPACE is declared ignorable as it's unused most of the
+   time"
+  (eval
+    `(lambda (ip f-space)
+       ,@(if (stringp (car body)) ; Put docstrings first
+           `(,(car body)
+              (declare (ignorable f-space))
+              ,@(cdr body))
+           `((declare (ignorable f-space))
+             ,@body)))))
 
 ;;; Instructions "0" to "9", and "a" to "f"
 ;;; The more natural DOTIMES or LOOP doesn't work here, as it closes over the
