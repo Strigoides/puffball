@@ -3,6 +3,10 @@
   :components ((:file "packages")
                (:file "fingerprint"
                 :depends-on ("packages"))
+               (:module fingerprints
+                        :pathname "fingerprints"
+                        :components ((:file "NULL"))
+                        :depends-on ("packages" "fingerprint"))
                (:file "sysinfo"
                 :depends-on ("packages" "instructions"))
                (:file "vector"
