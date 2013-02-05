@@ -31,6 +31,12 @@
            `((declare (ignorable f-space))
              ,@body)))))
 
+(defun call-funge-instruction (char ip f-space)
+  "Call the instruction corresponding to CHAR with args IP and F-SPACE, and
+   return the value returned by that instruction"
+  (funcall (gethash char *funge-98-instructions*)
+           ip f-space))
+
 ;;; Instructions "0" to "9", and "a" to "f"
 ;;; The more natural DOTIMES or LOOP doesn't work here, as it closes over the
 ;;; same integer 16 times, and causes all 16 instructions to push 16 onto
@@ -169,12 +175,11 @@
    smaller, turn right. If they're the same, keep going forward"
   (let ((a (pop-stack ip))
         (b (pop-stack ip)))
-    (funcall (gethash (cond
-                        ((> a b) #\[)
-                        ((< a b) #\])
-                        (t #\Space))
-                      *funge-98-instructions*)
-             ip f-space)))
+    (call-funge-instruction (cond
+                           ((> a b) #\[)
+                           ((< a b) #\])
+                           (t #\Space))
+                         ip f-space)))
 
 (define-funge-instruction #\k
   "Pop a value `n' off the stack, move forward once, and then perform the
@@ -272,8 +277,7 @@
    If there is only one stack on the stack-stack, act like `r'"
   (cond
     ((null (cdr (ip-stack-stack ip)))
-     (funcall (gethash #\r *funge-98-instructions*)
-              ip f-space))
+     (call-funge-instruction #\r ip f-space))
     (t
      (setf (ip-storage-offset ip)
            (let ((y (pop (second (ip-stack-stack ip))))
@@ -300,8 +304,7 @@
    is negative, transfer |n| values from the top stack to the second stack. If
    n is zero, do nothing"
   (if (null (cdr (ip-stack-stack ip)))
-    (funcall (gethash #\r *funge-98-instructions*)
-             ip f-space)
+    (call-funge-instruction #\r ip f-space)
     (let ((move-n (pop-stack ip)))
       (cond
         ((plusp move-n)
@@ -410,4 +413,4 @@
             using (hash-value instruction) do
             (setf (gethash char *funge-98-instructions*)
                   instruction))
-      (funcall (gethash #\r *funge-98-instructions*) ip f-space))))
+      (call-funge-instruction #\r ip f-space))))
