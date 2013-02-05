@@ -69,7 +69,7 @@
   "Path seperator. / if unix-like, \ if windows"
   (declare (ignore ip f-space))
   (char-code
-    #+windows #\\   
+    #+win32 #\\   
     #+unix #\/))
 
 (definfo 7
