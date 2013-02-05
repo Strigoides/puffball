@@ -170,10 +170,12 @@
           (cdr (or #+sbcl sb-ext:*posix-argv* nil))))) 
 
 (definfo 20
-  "Environmental variables. Uses the sbcl extension"
+  "Environment variables. Uses the sbcl extension"
   (declare (ignore ip f-space))
   (null-delimited-ints<-string-list
-    (sb-unix::posix-environ))) 
+    #+unix (sb-unix::posix-environ)
+    #-unix nil)) ; No idea if sbcl even provides an extension to get all
+                 ; environment variables under Windows
 
 (define-funge-instruction #\y
   "Retrieves various information about the interpreter and the underlying OS.
