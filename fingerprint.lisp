@@ -22,7 +22,7 @@
   "Signify that the semantic definitions in the rest of the file belong to
    fingerprint `NAME'. Works similarly to IN-PACKAGE"
   `(eval-when (:compile-toplevel :load-toplevel :execute)
-     (setf *fingerprint* (get-fingerprint ,name))))
+     (setf *fingerprint* (get-fingerprint-from-string ,name))))
 
 (defmacro defsemantics (letter &body body)
   "Define code to be executed when the current fingerprint is loaded, and
@@ -33,11 +33,15 @@
   `(setf (gethash (character ,letter) *fingerprint*)
          (instruction-lambda ',body)))
 
-(defun get-fingerprint (name)
+(defun get-fingerprint-from-string (name)
   "Return the fingerprint corresponding to the name NAME, or NIL if the
    fingerprint is not found. NAME can be a symbol or a string, either way it's
    converted to a string."
   (gethash (id<-fp-string (string name)) *fingerprints*))
+
+(defun get-fingerprint-from-char-codes (char-codes)
+  "Return the fingerprint corresponding to CHAR-CODES, or NIL if it's not found"
+  (gethash (id<-char-codes char-codes) *fingerprints*))
 
 (defun id<-fp-string (fingerprint-name)
   "Take the string name of a fingerprint (such as ''NULL'') and turns it into

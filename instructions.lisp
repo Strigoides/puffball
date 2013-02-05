@@ -394,3 +394,20 @@
                                           (ip-delta ip))
                         (code-char (pop-stack ip)))
   (move-ip ip))
+
+;;; Fingerprints
+;;; The #+nil #\) is there because #\( screws up slimv's parenthesis balancing
+(define-funge-instruction #\( #+nil #\)
+  "Pop a value n, then pop n values, turn them into a fingerprint id, and load
+   the fingerprint associated with that id. If the fingerprint is not found,
+   reflect"
+  ;;; TODO: Save overwritten values and restore when unloading semantics
+  (let ((fingerprint (get-fingerprint-from-char-codes
+                       (loop repeat (pop-stack ip) collecting
+                             (pop-stack ip)))))
+    (if fingerprint
+      (loop for char being the hash-keys in fingerprint
+            using (hash-value instruction) do
+            (setf (gethash char *funge-98-instructions*)
+                  instruction))
+      (funcall (gethash #\r *funge-98-instructions*) ip f-space))))
