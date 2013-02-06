@@ -41,15 +41,15 @@
 ;;; The more natural DOTIMES or LOOP doesn't work here, as it closes over the
 ;;; same integer 16 times, and causes all 16 instructions to push 16 onto
 ;;; the stack
-(mapc
-  (lambda (n char)
-    (setf (gethash char *funge-98-instructions*) 
-          (lambda (ip f-space)
-            (declare (ignore f-space))
-            (push n (top-stack ip))
-            ip)))
-  (loop for x from 0 to 15 collecting x)
-  (coerce "0123456789abcdefg" 'list))
+(map nil
+     (lambda (n char)
+       (setf (gethash char *funge-98-instructions*) 
+             (lambda (ip f-space)
+               (declare (ignore f-space))
+               (push n (top-stack ip))
+               ip)))
+     (loop for x from 0 to 15 collecting x)
+     "0123456789abcdefg")
 
 ;;; Arithmetic
 (define-funge-instruction #\+
@@ -282,8 +282,8 @@
      (setf (ip-storage-offset ip)
            (let ((y (pop (second (ip-stack-stack ip))))
                  (x (pop (second (ip-stack-stack ip)))))
-             (vector (if (null x) 0 x)
-                     (if (null y) 0 y))))
+             (vector (or x 0)
+                     (or y 0))))
      (let ((move-n (pop-stack ip)))
        (cond
          ((plusp move-n)
@@ -365,9 +365,7 @@
 ;;; Funge-space manipulation
 (define-funge-instruction #\'
   "Push the next character in funge-space onto the stack, and jump over it"
-  (setf (ip-location ip)
-        (vector-+ (ip-location ip)
-                  (ip-delta    ip)))
+  (move-ip ip)
   (push (char-code (char-at-vector f-space (ip-location ip)))
         (top-stack ip))
   ip)
