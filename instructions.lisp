@@ -414,3 +414,14 @@
             (setf (gethash char *funge-98-instructions*)
                   instruction))
       (call-funge-instruction #\r ip f-space))))
+
+(define-funge-instruction #\)
+  "Pop a value n, then pop n values, turn them into a fingerprint id, and
+   unload all semantics associated with that fingerprint"
+  (let ((fingerprint (get-fingerprint-from-char-codes
+                       (loop repeat (pop-stack ip) collecting
+                             (pop-stack ip)))))
+    (if fingerprint
+      (loop for char being the hash-keys in fingerprint do
+            (remhash char *funge-98-instructions*))
+      (call-funge-function #\r ip f-space))))
