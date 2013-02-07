@@ -370,6 +370,30 @@
         (top-stack ip))
   ip)
 
+(define-funge-instruction #\"
+  "Switch to string mode; any characters encountered until the next double
+   quote are pushed as numeric values onto the stack. Multiple spaces in a row
+   are ignored, and only one space is pushed onto the stack"
+  (declare (optimize (debug 3)))
+  (move-ip ip)
+  (flet ((wrap (vector)
+           (apply #'wrap vector (f-space-size f-space))))
+    (let ((delta (ip-delta ip)))
+      (do ((location (wrap (ip-location ip))
+                     (if (char= (char-at-vector f-space location) #\Space)
+                       (do ((location2 (vector-+ location delta)
+                                       (wrap (vector-+ location2 delta))))
+                         ((char/= (char-at-vector f-space location2)
+                                  #\Space)
+                          location2))
+                       (wrap (vector-+ location
+                                       (ip-delta ip))))))
+        ((char= (char-at-vector f-space location) #\")
+         (setf (ip-location ip) location))
+        (push (char-code (char-at-vector f-space location))
+              (top-stack ip)))
+      ip)))
+
 (define-funge-instruction #\g
   "Pop a vector, then push the value of the cell at that vector in funge-space"
   (push (char-code (char-at-vector f-space

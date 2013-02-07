@@ -7,20 +7,12 @@
    mapping characters to instructions"
   ;; TODO: Concurrency
   (let ((f-space     (load-f-space funge-code-string))
-        (ip          (make-ip))
-        (string-mode nil))
+        (ip          (make-ip)))
     (loop while ip do
           (let ((current-char (char-at-vector f-space (ip-location ip))))
-            (cond
-              ((char= current-char #\")
-               (setf string-mode (not string-mode)))
-              (string-mode 
-               (push (char-code current-char) 
-                     (top-stack ip))) 
-              (t
-               (setf ip (funcall (or (gethash current-char instructions)
-                                     (gethash #\r instructions))
-                                 ip f-space))))
+            (setf ip (funcall (or (gethash current-char instructions)
+                                  (gethash #\r instructions))
+                              ip f-space))
             (when ip
               (setf (ip-location ip)
                     (apply #'wrap
