@@ -59,6 +59,7 @@
           with x = 0 maximizing x into longest-line
           with y = 0
           until (char= char #\Nul)
+          unless (char= char #\Return)
           do (if (char= char #\Newline)
                (setf x 0
                      y (1+ y))
