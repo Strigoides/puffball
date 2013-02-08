@@ -146,6 +146,16 @@
         #(1 0))
   ip)
 
+(define-funge-instruction #\?
+  "Head in a random direction"
+  (setf (ip-delta ip)
+        (elt '(#(-1  0)
+               #( 1  0)
+               #( 0 -1)
+               #( 0  1))
+             (random 4)))
+  ip)
+
 (define-funge-instruction #\#
   "`Tramponline' instruction; jump over one cell"
   (move-ip ip))
