@@ -174,7 +174,7 @@
   (declare (ignore ip f-space))
   (null-delimited-ints<-string-list
     #+unix (sb-unix::posix-environ)
-    #-unix nil)) ; No idea if sbcl even provides an extension to get all
+    #-unix ()))  ; No idea if sbcl even provides an extension to get all
                  ; environment variables under Windows
 
 (define-funge-instruction #\y
