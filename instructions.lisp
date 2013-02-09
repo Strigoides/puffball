@@ -100,26 +100,8 @@
   (declare (ignore ip))
   nil)
 
-(define-funge-instruction #\Space
-  "NOP"
-  ;; TODO: Implement backtrack wrapping; " " shouldn't be a NOP, as it should
-  ;; execute in "no time at all", as far as concurrency is concerned
-  ip)
-
 (define-funge-instruction #\z
   "NOP"
-  ip)
-
-(define-funge-instruction #\;
-  "Skip instructions until the next ;"
-  ;; TODO: This should also take "no time at all" as far as concurrency is
-  ;; concerned
-  (setf (ip-location ip)
-        (vector-minus
-          (next-instruction (ip-location ip)
-                            (ip-delta ip)
-                            f-space)
-          (ip-delta ip)))
   ip)
 
 (define-funge-instruction #\<
@@ -188,7 +170,7 @@
     (call-funge-instruction (cond
                            ((> a b) #\[)
                            ((< a b) #\])
-                           (t #\Space))
+                           (t #\z))
                          ip f-space)))
 
 (define-funge-instruction #\k
@@ -456,4 +438,4 @@
     (if fingerprint
       (loop for char being the hash-keys in fingerprint do
             (remhash char *funge-98-instructions*))
-      (call-funge-function #\r ip f-space))))
+      (call-funge-instruction #\r ip f-space))))
