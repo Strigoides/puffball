@@ -8,6 +8,11 @@
   ;; TODO: Concurrency
   (let ((f-space     (load-f-space funge-code-string))
         (ip          (make-ip)))
+    (when (member (char-at-vector f-space (ip-location ip))
+                  '(#\Space #\Semicolon))
+      (setf (ip-location ip) (next-instruction (ip-location ip)
+                                               (ip-delta ip)
+                                               f-space)))
     (loop while ip do
           (let ((current-char (char-at-vector f-space (ip-location ip))))
             (setf ip (funcall (or (gethash current-char instructions)
